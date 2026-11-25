@@ -148,7 +148,8 @@ npm run probe -- --live      # adds a 1-token chat request
 ## Limitations
 
 - Google sign-in requires the Aside app, because the consent flow lives inside it.
-- There is no quota API; the card is plan plus token lifetime.
+- The card covers the subscription credit window and token lifetime; per-request usage is not
+  surfaced.
 - The catalog has no modality field; every model is advertised as text plus image. Image input was
   verified on `gemini-4-argon`; a text-only model will surface its own error.
 - The plugin is an unofficial integration and is not affiliated with Aside.
