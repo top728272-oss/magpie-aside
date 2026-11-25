@@ -1,0 +1,17 @@
+magpie-aside
+Copyright (c) 2026 magpie-aside contributors
+
+## Interoperability
+
+The plugin interoperates with the public HTTP API at api.aside.com. No Aside source code or assets
+are included in this repository.
+
+## magpie plugin specification
+
+The plugin follows the magpie plugin documentation (https://usemagpie.ai/docs/zh/plugins) and is an
+OpenCode v1 style provider plugin.
+
+## Third-party names
+
+"Aside" and the model names are trademarks of their respective owners. This plugin is an unofficial
+integration and is not affiliated with or endorsed by Aside.

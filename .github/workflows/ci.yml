@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: node ${{ matrix.node }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Test
+        run: node --test
+
+  bun:
+    name: bun smoke (plugin host runtime)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Import entry as Bun would
+        run: bun -e "import('./index.mjs').then(m => console.log(Object.keys(m)))"
+      - name: Load with magpie-like checks
+        run: |
+          bun -e "
+          import('./index.mjs').then(async (m) => {
+            const hooks = await m.AsidePlugin({ magpie: { options: {} } }, {});
+            const keys = Object.keys(hooks);
+            console.log('hooks:', keys.join(', '));
+            if (!hooks.auth || hooks.auth.provider !== 'aside') process.exit(1);
+            if (hooks.auth.methods.length !== 3) process.exit(1);
+            const cfg = {};
+            await hooks.config(cfg);
+            if (cfg.provider.aside.api !== 'https://api.aside.com/ai/v1') process.exit(1);
+          });
+          "
+
+  format:
+    name: prettier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: npm ci
+      - name: Format check
+        run: npm run format:check
